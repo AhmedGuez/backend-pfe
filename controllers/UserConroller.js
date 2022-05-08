@@ -76,8 +76,14 @@ module.exports = {
   
 
 
-  updateuser: (req, res) => {
-    User.findByIdAndUpdate({ _id: req.params.id }, req.body, (err, user) => {
+  updateuser: async (req, res) => {
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(req.body.password, salt);
+    User.findByIdAndUpdate({ _id: req.params.id }, {
+      name : req.body.name,
+      email: req.body.email,
+      password : hash
+    }, (err, user) => {
       if (!user) {
         res.status(500).json({
           message: "user not updated ",

@@ -1,5 +1,7 @@
+const { useColors } = require('debug/src/browser');
 const { ObjectId } = require('mongodb');
 const Intervention = require('../models/intervention');
+const User = require('../models/User');
 
 
 
@@ -36,6 +38,34 @@ module.exports = {
 
 },
 
+
+allInterventions : async (req , res)=>{
+    const response = await Intervention.find()
+    let interventions =[];
+    if(response){
+            for(let i =0 ; i< response.length ; i++){
+            if(response[i].createdBy){
+               let user = await User.findById({_id : response[i].createdBy});
+              
+               let intervention ={
+                   name: response[i].name,
+                   _id : response[i]._id,
+                   createdBy : user,
+                   degree : response[i].degree,
+                   etat : response[i].etat,
+                   delai : response[i].delai,
+                   description : response[i].description,
+                   lieu : response[i].lieu
+
+               }
+               interventions.push(intervention)
+
+            }
+        }
+    }
+    console.log(interventions)
+    res.json(interventions)
+},
 
  updateIntervention :  async (req, res) => {
      const {affectedBy} = req.body
