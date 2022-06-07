@@ -12,18 +12,18 @@ const route = express.Router();
 
 const UserController = require("../controllers/UserConroller");
 
-const upload = require('../middlewares/upload')
+const upload = require("../middlewares/upload");
 
 const isauth = require("../middlewares/isauth");
 
 const isadmin = require("../middlewares/isAdmin");
 
 //create user public route
-route.post("/createuser",isauth, isadmin, UserController.createuser);
+route.post("/createuser", isauth, isadmin, UserController.createuser);
 //get user by id private route
 route.get("/me", isauth, UserController.getuserbyid);
 // upadte user by id
-route.put("/update/:id", isauth, isadmin,  UserController.updateuser);
+route.put("/update/:id", isauth, isadmin, UserController.updateuser);
 //delete user
 route.delete("/delete/:id", isauth, isadmin, UserController.deleteuser);
 //get all users
@@ -31,7 +31,7 @@ route.get("/", isauth, isadmin, UserController.getallusers);
 //authenticate user public route
 route.post("/login", UserController.authenticate);
 //upload avatar
-route.put("/uploadavatar", isauth, upload.single('avatar'),  UserController.uploadavatar);
+route.put("/uploadavatar", isauth, upload.single("avatar"), UserController.uploadavatar);
 
 module.exports = route;
 
