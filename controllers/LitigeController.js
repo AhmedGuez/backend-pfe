@@ -2,7 +2,7 @@ const Litige = require("../models/Litige");
 const Service = require("../models/service");
 
 const addLitige = (req, res) => {
-  const { decription , interventionId } = req.body;
+  const { decription, interventionId } = req.body;
 
   if (!decription || !interventionId) {
     res.status(400).json({
@@ -13,7 +13,7 @@ const addLitige = (req, res) => {
   try {
     const newLitige = new Litige({
       description: decription,
-        interventionId : interventionId    
+      interventionId: interventionId,
     });
     newLitige.save().then(() => {
       res.status(200).json({
@@ -35,7 +35,7 @@ const getAllLitigeByIntervention = (req, res) => {
         data: null,
       });
     } else {
-      res.status(200).json({x
+      res.status(200).json({
         message: "services in system ",
         data: services,
       });
