@@ -40,6 +40,10 @@ module.exports = {
     let interventions = [];
     if (response) {
       for (let i = 0; i < response.length; i++) {
+        let affected = null;
+        if (response[i].affectedBy) {
+          affected = await User.findById({ _id: response[i].affectedBy });
+        }
         if (response[i].createdBy) {
           let user = await User.findById({ _id: response[i].createdBy });
 
@@ -48,10 +52,12 @@ module.exports = {
             _id: response[i]._id,
             createdBy: user,
             degree: response[i].degree,
+            affectedBy: affected,
             etat: response[i].etat,
             delai: response[i].delai,
             description: response[i].description,
             lieu: response[i].lieu,
+            createdAt: response[i].createdAt,
           };
           interventions.push(intervention);
         }
@@ -72,7 +78,10 @@ module.exports = {
       const inter = await Intervention.findById({ _id: req.params.id });
 
       let createdby = await User.findById({ _id: inter.createdBy });
-
+      let affected = null;
+      if (inter.affectedBy) {
+        affected = await User.findById({ _id: inter.affectedBy });
+      }
       console.log("inter", inter.affectedToUsers[0]);
       if (inter.affectedToUsers && inter.affectedToUsers.length > 0) {
         let result = await Promise.all(
@@ -89,6 +98,7 @@ module.exports = {
           degree: inter.degree,
           etat: inter.etat,
           delai: inter.delai,
+          affectedBy: affected || null,
           description: inter.description,
           lieu: inter.lieu,
           affectedToUsers: result,
@@ -102,6 +112,7 @@ module.exports = {
         degree: inter.degree,
         etat: inter.etat,
         delai: inter.delai,
+        affectedBy: affected || null,
         description: inter.description,
         lieu: inter.lieu,
         affectedToUsers: null,
@@ -115,7 +126,7 @@ module.exports = {
 
   updateIntervention: async (req, res) => {
     const { affectedBy } = req.body;
-    if (req.params.id && !req.body.fermer) {
+    if (req.params.id && !req.body.fermer && !req.body.etat) {
       try {
         const inter = await Intervention.findById({ _id: req.params.id });
         await Intervention.findByIdAndUpdate(
@@ -136,7 +147,7 @@ module.exports = {
           message: "error from server",
         });
       }
-    } else if (req.body.fermer) {
+    } else if (req.body.fermer && !req.body.etat) {
       try {
         await Intervention.findByIdAndUpdate(
           { _id: req.params.id },
@@ -144,6 +155,22 @@ module.exports = {
             dateDebut: null,
             etat: "NON_AFFECTEE",
             affectedBy: null,
+          }
+        );
+        res.status(200).json({
+          message: "Intervention updated successfully",
+        });
+      } catch (err) {
+        res.status(500).json({
+          message: "error from server",
+        });
+      }
+    } else if (req.body.etat) {
+      try {
+        await Intervention.findByIdAndUpdate(
+          { _id: req.params.id },
+          {
+            etat: req.body.etat,
           }
         );
         res.status(200).json({

@@ -5,9 +5,9 @@ const jwt = require("jsonwebtoken");
 module.exports = {
   // craete user
   createuser: async (req, res) => {
-    const { name, email, password , role} = req.body;
+    const { name, email, password, role } = req.body;
 
-    if (!name || !email || !password || !role ) {
+    if (!name || !email || !password || !role) {
       return res.status(400).json({ message: "Please enter all fields" });
     }
 
@@ -24,23 +24,20 @@ module.exports = {
         name,
         email,
         password: hash,
-        role : role
-      
+        role: role,
       });
-      if(req.body.service ){
-         newUser = new User({
+      if (req.body.service) {
+        newUser = new User({
           name,
           email,
           password: hash,
-          service : req.body.service,
-          role : req.body.role
-        
+          service: req.body.service,
+          role: req.body.role,
         });
       }
-     
 
       const savedUser = await newUser.save();
-    
+
       if (!savedUser) throw Error("Something went wrong saving the user");
 
       /* const token = jwt.sign({ id: savedUser._id }, JWT_SECRET, {
@@ -72,30 +69,30 @@ module.exports = {
     });
   },
 
-
-  
-
-
   updateuser: async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(req.body.password, salt);
-    User.findByIdAndUpdate({ _id: req.params.id }, {
-      name : req.body.name,
-      email: req.body.email,
-      password : hash
-    }, (err, user) => {
-      if (!user) {
-        res.status(500).json({
-          message: "user not updated ",
-          data: null,
-        });
-      } else {
-        res.status(200).json({
-          message: "user updated successfuly ",
-          data: user,
-        });
+    User.findByIdAndUpdate(
+      { _id: req.params.id },
+      {
+        name: req.body.name,
+        email: req.body.email,
+        password: hash,
+      },
+      (err, user) => {
+        if (!user) {
+          res.status(500).json({
+            message: "user not updated ",
+            data: null,
+          });
+        } else {
+          res.status(200).json({
+            message: "user updated successfuly ",
+            data: user,
+          });
+        }
       }
-    });
+    );
   },
 
   deleteuser: (req, res) => {
@@ -154,7 +151,7 @@ module.exports = {
             const token = jwt.sign({ id: user._id }, "jwt-secret");
             res.status(200).json({
               token: token,
-              
+              role: user.role,
             });
           }
         }
