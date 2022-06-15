@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const Fournisseur = require("../models/fournisseur");
 
 module.exports = {
   // craete user
@@ -39,6 +40,37 @@ module.exports = {
       const savedUser = await newUser.save();
 
       if (!savedUser) throw Error("Something went wrong saving the user");
+
+      /* const token = jwt.sign({ id: savedUser._id }, JWT_SECRET, {
+        expiresIn: 3600,
+      }); */
+
+      res.status(200).json({
+        message: "user successfuly registred",
+        user: savedUser,
+      });
+    } catch (e) {
+      res.status(400).json({ error: e.message });
+    }
+  },
+
+  createFournisseur: async (req, res) => {
+    const { name, email, tel } = req.body;
+
+    if (!name || !email || !tel) {
+      return res.status(400).json({ message: "Please enter all fields" });
+    }
+
+    try {
+      let newFour = new Fournisseur({
+        name,
+        email,
+        tel,
+      });
+
+      const savedUser = await newFour.save();
+
+      if (!savedUser) throw Error("Something went wrong saving the fournisseur");
 
       /* const token = jwt.sign({ id: savedUser._id }, JWT_SECRET, {
         expiresIn: 3600,
@@ -95,6 +127,24 @@ module.exports = {
     );
   },
 
+  deleteFournisseur: (req, res) => {
+    Fournisseur.findByIdAndDelete({ _id: req.params.id }, (err, user) => {
+      if (err) {
+        res.status(500).json({
+          message: "Fournisseur not deleted ",
+          data: null,
+          status: 500,
+        });
+      } else {
+        res.status(200).json({
+          message: "Fournisseur deletd successfuly ",
+          data: null,
+          status: 200,
+        });
+      }
+    });
+  },
+
   deleteuser: (req, res) => {
     User.findByIdAndDelete({ _id: req.params.id }, (err, user) => {
       if (err) {
@@ -124,6 +174,22 @@ module.exports = {
         res.status(200).json({
           message: "users in system ",
           data: users,
+        });
+      }
+    });
+  },
+
+  getAllFournisseur: (req, res) => {
+    Fournisseur.find({}, (err, fournisseurs) => {
+      if (fournisseurs.length <= 0) {
+        res.status(500).json({
+          message: "no fournisseurs in system ",
+          data: null,
+        });
+      } else {
+        res.status(200).json({
+          message: "fournisseurs in system ",
+          data: fournisseurs,
         });
       }
     });

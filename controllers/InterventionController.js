@@ -98,6 +98,8 @@ module.exports = {
           degree: inter.degree,
           etat: inter.etat,
           delai: inter.delai,
+          dateDebut: inter.dateDebut,
+          dateEnd: inter.dateEnd || null,
           affectedBy: affected || null,
           description: inter.description,
           lieu: inter.lieu,
@@ -111,6 +113,8 @@ module.exports = {
         createdBy: createdby,
         degree: inter.degree,
         etat: inter.etat,
+        dateDebut: inter.dateDebut,
+        dateEnd: inter.dateEnd || null,
         delai: inter.delai,
         affectedBy: affected || null,
         description: inter.description,
@@ -120,6 +124,26 @@ module.exports = {
     } catch (err) {
       res.status(400).json({
         message: err,
+      });
+    }
+  },
+
+  deleteIntervention: async (req, res) => {
+    if (req.params.id) {
+      let id = req.params.id;
+      try {
+        await Intervention.findByIdAndDelete({ _id: id });
+        res.status(200).json({
+          message: "Intervention deleted successfully",
+        });
+      } catch (err) {
+        res.status(500).json({
+          message: "Error collection!",
+        });
+      }
+    } else {
+      res.status(400).json({
+        message: "ID is required!",
       });
     }
   },
@@ -170,6 +194,7 @@ module.exports = {
         await Intervention.findByIdAndUpdate(
           { _id: req.params.id },
           {
+            dateEnd: Date.now(),
             etat: req.body.etat,
           }
         );

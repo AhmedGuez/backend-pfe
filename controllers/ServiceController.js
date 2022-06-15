@@ -27,6 +27,26 @@ const addService = (req, res) => {
   }
 };
 
+const deleteService = async (req, res) => {
+  if (req.params.id) {
+    let id = req.params.id;
+    try {
+      await Service.findByIdAndDelete({ _id: id });
+      res.status(200).json({
+        message: "Service deleted successfully",
+      });
+    } catch (err) {
+      res.status(500).json({
+        message: "Error collection!",
+      });
+    }
+  } else {
+    res.status(400).json({
+      message: "ID is required!",
+    });
+  }
+};
+
 const getAllServices = (req, res) => {
   Service.find({}, (err, services) => {
     if (services.length <= 0) {
@@ -43,4 +63,4 @@ const getAllServices = (req, res) => {
   });
 };
 
-module.exports = { addService, getAllServices };
+module.exports = { addService, getAllServices, deleteService };

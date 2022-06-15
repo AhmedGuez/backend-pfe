@@ -20,6 +20,11 @@ const isadmin = require("../middlewares/isAdmin");
 
 //create user public route
 route.post("/createuser", isauth, isadmin, UserController.createuser);
+
+route.post("/createFournisseur", isauth, isadmin, UserController.createFournisseur);
+route.delete("/deleteFournisseur/:id", isauth, isadmin, UserController.deleteFournisseur);
+route.get("/getAllFournisseurs", isauth, UserController.getAllFournisseur);
+
 //get user by id private route
 route.get("/me", isauth, UserController.getuserbyid);
 // upadte user by id
